@@ -5,7 +5,9 @@ import { OrbitControls } from "https://threejsfundamentals.org/threejs/resources
 import { PositionalAudioHelper } from "https://threejsfundamentals.org/threejs/resources/threejs/r119/examples/jsm/helpers/PositionalAudioHelper.js";
 import { GLTFLoader } from "https://unpkg.com/three@0.119.0/examples/jsm/loaders/GLTFLoader.js";
 
-let scene, camera, renderer, laptop;
+let scene, camera, renderer;
+
+let lime, lime2;
 
 const startButton = document.getElementById("startButton");
 startButton.addEventListener("click", init);
@@ -60,65 +62,53 @@ function init() {
   const grid = new THREE.GridHelper(50, 50, 0x888888, 0x888888);
   scene.add(grid);
 
-  // sound is damped behind this wall
-  const wallGeometry = new THREE.BoxGeometry(2, 1, 0.1);
-  const wallMaterial = new THREE.MeshBasicMaterial({
-    color: 0xffffff,
-    transparent: true,
-    opacity: 0.5,
-  });
-
-  const wall = new THREE.Mesh(wallGeometry, wallMaterial);
-  wall.position.set(0, 0.5, -0.5);
-  scene.add(wall);
-
-  // make an object which we will play the sound from
-  let sphereGeometry = new THREE.SphereGeometry(0.25, 0, 0);
-  let sphereMaterial = new THREE.MeshPhongMaterial({ color: 0x8f34eb });
-  let sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-  sphere.position.set(0, 0.25, 0);
-  //   sphere.rotation.y = -Math.PI;
-  sphere.castShadow = true;
-
-  // scene.add(sphere); // add the mesh to the scene
-
   //audio
   const listener = new THREE.AudioListener();
   camera.add(listener);
 
-  const audioElement = document.getElementById("track1");
+  //*METAL SOUNDS
+  const uMetal = document.getElementById("track1");
 
   //position the audio in space!
-  const positionalAudio = new THREE.PositionalAudio(listener);
-  positionalAudio.setMediaElementSource(audioElement);
+  const uMetalPos = new THREE.PositionalAudio(listener);
+  uMetalPos.setMediaElementSource(uMetal);
   // RefDistance determines how far away from the source we must be before the sound
   // starts to decrease in volume
   // there is also .setRollOffFactor which we can play with
-  positionalAudio.setRefDistance(1);
+  uMetalPos.setRefDistance(0.05);
   //inner angle, outer angle, and inner gain
   // determines how the audio will respond in relation to the angle of the listener
-  positionalAudio.setDirectionalCone(180, 230, 0.1);
+  uMetalPos.setDirectionalCone(90, 230, 0);
 
-  audioElement.play();
+  uMetal.play();
 
-  //viisualize the directional cone
-  const helper = new PositionalAudioHelper(positionalAudio, 10);
+  //visualize the directional cone
+  const helper = new PositionalAudioHelper(uMetalPos, 10);
   // we add it to our positionalAudio object to link their positions
-  positionalAudio.add(helper);
+  uMetalPos.add(helper);
 
-  // sphere.add(positionalAudio);
+  const nMetal = document.getElementById("track2");
 
-  const loader = new GLTFLoader();
-  loader.load(
-    "objects/laptop/scene.gltf",
+  const nMetalPos = new THREE.PositionalAudio(listener);
+  nMetalPos.setMediaElementSource(nMetal);
+  nMetalPos.setRefDistance(0.05);
+  nMetalPos.setDirectionalCone(90, 230, 0);
+  nMetal.play();
+
+  const nhelper = new PositionalAudioHelper(nMetalPos, 10);
+  nMetalPos.add(nhelper);
+
+  const limeLoader = new GLTFLoader();
+  limeLoader.load(
+    "objects/lime/half.glb",
     function (gltf) {
-      laptop = gltf.scene;
-      scene.add(laptop);
+      lime = gltf.scene;
+      scene.add(lime);
       // gltf.scene.rotation.y = Math.PI;
-      laptop.position.set(0, 0, 0);
-      laptop.scale.set(0.01, 0.01, 0.01);
+      lime.position.set(0, 0, 0);
+      lime.scale.set(0.01, 0.01, 0.01);
 
-      laptop.add(positionalAudio);
+      lime.add(uMetalPos);
     },
     undefined,
     function (error) {
@@ -126,6 +116,17 @@ function init() {
     }
   );
 
+  //2nd lime
+  const lime2Loader = new GLTFLoader();
+  lime2Loader.load("objects/lime/half.glb", function (gltf) {
+    lime2 = gltf.scene;
+    scene.add(lime2);
+    lime2.position.set(0.1, 0, 0.1);
+    lime2.rotation.y = Math.PI;
+    lime2.scale.set(0.01, 0.01, 0.01);
+
+    lime2.add(nMetalPos);
+  });
   // boiler plate - setting up rendering from 3D to 2D
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -138,8 +139,8 @@ function init() {
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.target.set(0, 0.1, 0);
   controls.update();
-  controls.minDistance = 0.5;
-  controls.maxDistance = 10;
+  controls.minDistance = 0.1;
+  controls.maxDistance = 15;
   controls.maxPolarAngle = 0.5 * Math.PI;
 
   window.addEventListener("resize", onWindowResize);
