@@ -8,6 +8,8 @@ import { GLTFLoader } from "https://unpkg.com/three@0.119.0/examples/jsm/loaders
 let scene, camera, renderer;
 
 let lime, lime2;
+let web1, web2, web3, web4, web5, web6;
+let uweb1, uweb2, uweb3, uweb4, uweb5, uweb6;
 
 const startButton = document.getElementById("startButton");
 startButton.addEventListener("click", init);
@@ -79,8 +81,7 @@ function init() {
   //inner angle, outer angle, and inner gain
   // determines how the audio will respond in relation to the angle of the listener
   uMetalPos.setDirectionalCone(90, 230, 0);
-
-  uMetal.play();
+  // uMetal.play();
 
   //visualize the directional cone
   const helper = new PositionalAudioHelper(uMetalPos, 10);
@@ -93,40 +94,99 @@ function init() {
   nMetalPos.setMediaElementSource(nMetal);
   nMetalPos.setRefDistance(0.05);
   nMetalPos.setDirectionalCone(90, 230, 0);
-  nMetal.play();
+  // nMetal.play();
 
   const nhelper = new PositionalAudioHelper(nMetalPos, 10);
   nMetalPos.add(nhelper);
 
-  const limeLoader = new GLTFLoader();
-  limeLoader.load(
-    "objects/lime/half.glb",
-    function (gltf) {
-      lime = gltf.scene;
-      scene.add(lime);
-      // gltf.scene.rotation.y = Math.PI;
-      lime.position.set(0, 0, 0);
-      lime.scale.set(0.01, 0.01, 0.01);
+  //first lime
+  // const limeLoader = new GLTFLoader();
+  // limeLoader.load(
+  //   "objects/lime/half.glb",
+  //   function (gltf) {
+  //     lime = gltf.scene;
+  //     scene.add(lime);
+  //     // gltf.scene.rotation.y = Math.PI;
+  //     lime.position.set(0, 0, 0);
+  //     lime.scale.set(0.01, 0.01, 0.01);
 
-      lime.add(uMetalPos);
-    },
-    undefined,
-    function (error) {
-      console.error(error);
-    }
-  );
+  //     lime.add(uMetalPos);
+  //   },
+  //   undefined,
+  //   function (error) {
+  //     console.error(error);
+  //   }
+  // );
 
   //2nd lime
-  const lime2Loader = new GLTFLoader();
-  lime2Loader.load("objects/lime/half.glb", function (gltf) {
-    lime2 = gltf.scene;
-    scene.add(lime2);
-    lime2.position.set(0.1, 0, 0.1);
-    lime2.rotation.y = Math.PI;
-    lime2.scale.set(0.01, 0.01, 0.01);
+  // const lime2Loader = new GLTFLoader();
+  // lime2Loader.load("objects/lime/half.glb", function (gltf) {
+  //   lime2 = gltf.scene;
+  //   scene.add(lime2);
+  //   lime2.position.set(0.1, 0, 0.1);
+  //   lime2.rotation.y = Math.PI;
+  //   lime2.scale.set(0.01, 0.01, 0.01);
+  //   lime2.add(nMetalPos);
+  // });
 
-    lime2.add(nMetalPos);
+  //loading web !!!!! natural
+  const glass = document.getElementById("track15");
+
+  const glassPos = new THREE.PositionalAudio(listener);
+  glassPos.setMediaElementSource(glass);
+  glassPos.setRefDistance(1);
+  glassPos.setDirectionalCone(90, 230, 0);
+  glass.play();
+
+  const ghelper = new PositionalAudioHelper(glassPos, 400);
+  glassPos.add(ghelper);
+
+  //2 unnatural
+  const glass1 = document.getElementById("track16");
+
+  const glassPos1 = new THREE.PositionalAudio(listener);
+  glassPos1.setMediaElementSource(glass1);
+  glassPos1.setRefDistance(0.5);
+  glassPos1.setDirectionalCone(90, 230, 0);
+  glass1.play();
+
+  const ghelper1 = new PositionalAudioHelper(glassPos1, 400);
+  glassPos1.add(ghelper1);
+
+  //3
+  // const g2 = document.getElementById("track5");
+
+  // const g2P = new THREE.PositionalAudio(listener);
+  // g2P.setMediaElementSource(g2);
+  // g2P.setRefDistance(0.05);
+  // g2P.setDirectionalCone(90, 230, 0);
+  // g2.play();
+
+  // const gh2 = new PositionalAudioHelper(g2P, 20);
+  // g2P.add(gh2);
+
+  //natural
+  const web1Loader = new GLTFLoader();
+  web1Loader.load("objects/web/newWeb.gltf", function (gltf) {
+    web1 = gltf.scene;
+    scene.add(web1);
+    web1.position.set(0, 0, 0);
+    web1.rotation.y = Math.PI;
+    web1.scale.set(0.001, 0.001, 0.001);
+    web1.add(glassPos);
   });
+
+  //unnatural
+  const web2Loader = new GLTFLoader();
+  web2Loader.load("objects/web/newWeb.gltf", function (gltf) {
+    web2 = gltf.scene;
+    scene.add(web2);
+    web2.position.set(0, 0, -0.5);
+    // web2.rotation.y = Math.PI;
+    web2.scale.set(0.001, 0.001, 0.001);
+    web2.add(glassPos1);
+  });
+
   // boiler plate - setting up rendering from 3D to 2D
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -139,8 +199,8 @@ function init() {
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.target.set(0, 0.1, 0);
   controls.update();
-  controls.minDistance = 0.1;
-  controls.maxDistance = 15;
+  controls.minDistance = 0.05;
+  controls.maxDistance = 20;
   controls.maxPolarAngle = 0.5 * Math.PI;
 
   window.addEventListener("resize", onWindowResize);
